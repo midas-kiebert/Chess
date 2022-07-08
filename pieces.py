@@ -24,6 +24,7 @@ class Pawn(Piece):
 
     def __init__(self, color: bool):
         super().__init__(color)
+        self.id = 'pw' if color else 'pb'
 
     def potential_moves(self):
         moves = []
@@ -43,6 +44,7 @@ class King(Piece):
 
     def __init__(self, color: bool):
         super().__init__(color)
+        self.id = 'kw' if color else 'kb'
 
     def potential_moves(self):
         return [Coord(i, j) for i in range(-1, 2) for j in range(-1, 2)]
@@ -53,6 +55,7 @@ class Queen(Piece):
 
     def __init__(self, color: bool):
         super().__init__(color)
+        self.id = 'qw' if color else 'qb'
 
     def potential_moves(self):
         return [Coord(0, i) for i in range(-7, 8)] +\
@@ -65,6 +68,7 @@ class Rook(Piece):
 
     def __init__(self, color: bool):
         super().__init__(color)
+        self.id = 'rw' if color else 'rb'
 
     def potential_moves(self):
         return [Coord(0, i) for i in range(-7, 8)] +\
@@ -76,6 +80,7 @@ class Bishop(Piece):
 
     def __init__(self, color: bool):
         super().__init__(color)
+        self.id = 'bw' if color else 'bb'
 
     def potential_moves(self):
         return [Coord(i, i) for i in range(-7, 8)] +\
@@ -87,6 +92,7 @@ class Knight(Piece):
 
     def __init__(self, color: bool):
         super().__init__(color)
+        self.id = 'nw' if color else 'nb'
 
     def potential_moves(self):
         return [Coord(i, j) for i in (-1, 1) for j in (-2, 2)] +\
