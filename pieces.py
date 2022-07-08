@@ -1,17 +1,15 @@
-
+WHITE = 1
+BLACK = 0
 
 
 class Piece:
-    WHITE = 1
-    BLACK = 0
-
     def __init__(self, color: bool):
         self.color = color
 
     def __repr__(self):
-        if self.color == Piece.BLACK:
-            return f'\033[1;31m{self.char}\033[1;31m'
-        return f'\033[1;34m{self.char}\033[1;34m'
+        if self.color == BLACK:
+            return f'\033[1;31m{self.char}'
+        return f'\033[1;39m{self.char}'
 
 
 class Pawn(Piece):

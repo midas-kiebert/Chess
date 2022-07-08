@@ -4,4 +4,4 @@ import board
 
 b = board.Board()
 
-print(b[a8])
+print(b)
