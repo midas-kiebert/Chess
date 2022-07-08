@@ -4,4 +4,4 @@ import board
 
 b = board.Board()
 
-print(b)
+b.move(e2, e4)

@@ -11,6 +11,9 @@ class Piece:
             return f'\033[1;31m{self.char}'
         return f'\033[1;39m{self.char}'
 
+    def __bool__(self):
+        return not isinstance(self, Empty)
+
 
 class Pawn(Piece):
     char = 'P'
@@ -52,3 +55,10 @@ class Knight(Piece):
 
     def __init__(self, color: bool):
         super().__init__(color)
+
+
+class Empty(Piece):
+    char = ' '
+
+    def __init__(self):
+        super().__init__(0)
