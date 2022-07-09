@@ -5,10 +5,11 @@ BLACK = 0
 
 
 class Piece:
-    def __init__(self, color: bool):
+    def __init__(self, color: bool, pos: Coord):
         self.color = color
         self.moved = False
         self.en_passant = False
+        self.pos = pos
 
     def __repr__(self):
         if self.color == BLACK:
@@ -22,8 +23,8 @@ class Piece:
 class Pawn(Piece):
     char = 'P'
 
-    def __init__(self, color: bool):
-        super().__init__(color)
+    def __init__(self, color: bool, pos: Coord):
+        super().__init__(color, pos)
         self.id = 'pw' if color else 'pb'
 
     def potential_moves(self):
@@ -42,8 +43,8 @@ class Pawn(Piece):
 class King(Piece):
     char = 'K'
 
-    def __init__(self, color: bool):
-        super().__init__(color)
+    def __init__(self, color: bool, pos: Coord):
+        super().__init__(color, pos)
         self.id = 'kw' if color else 'kb'
 
     def potential_moves(self):
@@ -53,8 +54,8 @@ class King(Piece):
 class Queen(Piece):
     char = 'Q'
 
-    def __init__(self, color: bool):
-        super().__init__(color)
+    def __init__(self, color: bool, pos: Coord):
+        super().__init__(color, pos)
         self.id = 'qw' if color else 'qb'
 
     def potential_moves(self):
@@ -66,8 +67,8 @@ class Queen(Piece):
 class Rook(Piece):
     char = 'R'
 
-    def __init__(self, color: bool):
-        super().__init__(color)
+    def __init__(self, color: bool, pos: Coord):
+        super().__init__(color, pos)
         self.id = 'rw' if color else 'rb'
 
     def potential_moves(self):
@@ -78,8 +79,8 @@ class Rook(Piece):
 class Bishop(Piece):
     char = 'B'
 
-    def __init__(self, color: bool):
-        super().__init__(color)
+    def __init__(self, color: bool, pos: Coord):
+        super().__init__(color, pos)
         self.id = 'bw' if color else 'bb'
 
     def potential_moves(self):
@@ -90,8 +91,8 @@ class Bishop(Piece):
 class Knight(Piece):
     char = 'N'
 
-    def __init__(self, color: bool):
-        super().__init__(color)
+    def __init__(self, color: bool, pos: Coord):
+        super().__init__(color, pos)
         self.id = 'nw' if color else 'nb'
 
     def potential_moves(self):
@@ -103,4 +104,4 @@ class Empty(Piece):
     char = ' '
 
     def __init__(self):
-        super().__init__(0)
+        super().__init__(0, Coord(-1, -1))
