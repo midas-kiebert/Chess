@@ -11,10 +11,10 @@ class Piece:
         self.en_passant = False
         self.pos = pos
 
-    def __repr__(self):
-        if self.color == BLACK:
-            return f'\033[1;31m{self.char}'
-        return f'\033[1;39m{self.char}'
+    # def __repr__(self):
+    #     if self.color == BLACK:
+    #         return f'\033[1;31m{self.char}'
+    #     return f'\033[1;39m{self.char}'
 
     def __bool__(self):
         return not isinstance(self, Empty)
@@ -48,7 +48,9 @@ class King(Piece):
         self.id = 'kw' if color else 'kb'
 
     def potential_moves(self):
-        return [Coord(i, j) for i in range(-1, 2) for j in range(-1, 2)]
+        if self.moved:
+            return [Coord(i, j) for i in range(-1, 2) for j in range(-1, 2)]
+        return [Coord(i, j) for i in range(-1, 2) for j in range(-1, 2)] + [Coord(-2, 0), Coord(2, 0)]
 
 
 class Queen(Piece):

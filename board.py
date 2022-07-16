@@ -46,8 +46,6 @@ class Board:
 
     def in_check(self, pos, enemy):
         enemy_pieces = self.teams[enemy]
-        # print(enemy_pieces)
-        # [print(p, p.pos, pos, self.is_valid(p.pos, pos)) for p in enemy_pieces]
         return any([self.is_valid(p.pos, pos)[0] for p in enemy_pieces])
 
     def gets_blocked(self, pos1, pos2):
@@ -89,60 +87,96 @@ class Board:
         return False
 
 
+    def castle_check(self, pos1, pos2, enemy):
+        # Check if rook hasn't moved
+        rook_coords = Coord(0 if pos2.x < pos1.x else 7, pos1.y)
+        if self[rook_coords] and self[rook_coords].moved:
+            return False
+
+        # Check if space between is empty
+        pos3 = Coord((pos1.x + pos2.x) // 2, pos1.y)
+        if self[pos3] or (abs(rook_coords.x - pos1.x) == 3 and self[(pos2.x - 1, pos1.y)]):
+            return False
+
+        # Check if you don't move through check
+        self.turn = not self.turn
+        if self.in_check(pos3, enemy) or self.in_check(pos2, enemy):
+            self.turn = not self.turn
+            return False
+
+        self.turn = not self.turn
+
+        return True
+
+
     def is_valid(self, pos1, pos2, verbose=False):
         '''Returns if the move is valid and if its en passant.'''
         piece1 = self[pos1]
         piece2 = self[pos2]
+        special_move = False
 
         # Check both positions are valid
         if pos1 not in COORDINATES or pos2 not in COORDINATES:
             if verbose: print('invalid coordinates')
-            return False, False
+            return False, special_move
 
         # Check if there is a piece on pos1
         if not piece1:
             if verbose: print('no piece to move')
-            return False, False
+            return False, special_move
 
         if piece1.color != self.turn:
             if verbose: print('not your turn')
-            return False, False
+            return False, special_move
 
         # Check if the piece can make the move
         if pos2 not in {pos1 + move for move in piece1.potential_moves()}:
             if verbose: print('illegal move')
-            return False, False
+            return False, special_move
 
         # Check if you move through another piece
         if not isinstance(piece1, Knight) and self.gets_blocked(pos1, pos2):
             if verbose: print('cannot move through another piece')
-            return False, False
-
-        # Check special pawn rules
-        pawn_move = self.pawn_check(pos1, pos2)
-        if isinstance(piece1, Pawn) and not pawn_move:
-            if verbose: print('illegal pawn move')
-            return False, False
+            return False, special_move
 
         if piece2 and piece2.color == piece1.color:
             if verbose: print('cannot take own piece.')
-            return False, False
+            return False, special_move
 
-        return True, pawn_move
+        # Castle Check
+        if isinstance(piece1, King) and abs(pos1.x - pos2.x) == 2:
+            special_move = 'castling'
+            if not self.castle_check(pos1, pos2, not piece1.color):
+                if verbose: print('illegal castling')
+                return False, special_move
+            return True, special_move
+
+        # Check special pawn rules
+        special_move = self.pawn_check(pos1, pos2)
+        if isinstance(piece1, Pawn) and not special_move:
+            if verbose: print('illegal pawn move')
+            return False, special_move
+
+        return True, special_move
 
     def move(self, pos1, pos2):
         piece1 = self[pos1]
         piece2 = self[pos2]
 
-        valid, pawn_move = self.is_valid(pos1, pos2, verbose=True)
+        valid, special_move = self.is_valid(pos1, pos2, verbose=True)
 
         if not valid:
             return
 
-        if pawn_move == 'en passant':
+        if special_move == 'en passant':
             pos3 = (pos2.x, pos1.y)
             piece2 = self[pos3]
             self[pos3] = Empty()
+        elif special_move == 'castling':
+            rook_coords = Coord(0 if pos2.x < pos1.x else 7, pos1.y)
+            pos3 = Coord((pos1.x + pos2.x) // 2, pos1.y)
+            self[pos3] = self[rook_coords]
+            self[rook_coords] = Empty()
 
         if piece2:
             self.remove_piece(piece2)
@@ -179,14 +213,14 @@ class Board:
             print('cannot move into check')
             return
 
-    def __repr__(self):
-        background_colors = ('\033[43m', '\033[40m')
-        string = ''
-        for i, row in enumerate(self.board):
-            for j, square in enumerate(row):
-                string += background_colors[(i + j) % 2] + ' ' + str(square) + ' \033[0;29;49m'
-            string += '\n'
-        return string[:-1]
+    # def __repr__(self):
+    #     background_colors = ('\033[43m', '\033[40m')
+    #     string = ''
+    #     for i, row in enumerate(self.board):
+    #         for j, square in enumerate(row):
+    #             string += background_colors[(i + j) % 2] + ' ' + str(square) + ' \033[0;29;49m'
+    #         string += '\n'
+    #     return string[:-1]
 
     def __getitem__(self, coordinate: tuple):
         x, y = coordinate
